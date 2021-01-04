@@ -1,12 +1,13 @@
 <?php
 
 use App\Core\View;
+use App\Core\Controller;
 
-class ChatController {
+class ChatController extends Controller {
 
     public function view() {
-
-        View::view('index', [
+        
+        return View::view('index', [
             'name' => 'Victor'
         ]);
 

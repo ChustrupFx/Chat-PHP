@@ -1,0 +1,23 @@
+.chat-container {
+
+    max-height: 400px;
+    height: 400px;
+    margin-bottom: 5px;
+    padding: 10px;
+    overflow: auto;
+
+}
+
+.message {
+    margin-bottom: 10px;
+    width: 50%;
+}
+
+.message-mine {
+    align-self: flex-end;
+    text-align: right;
+}
+
+.name {
+    color: red;
+}

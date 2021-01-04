@@ -6,7 +6,7 @@ class View {
 
     static function view($view, $data = []) {
         
-        $viewFile = "app/views/$view.php";
+        $viewFile = "../app/views/$view.php";
 
         if (!file_exists($viewFile))
             throw new \Exception("The view $view does not exist");
