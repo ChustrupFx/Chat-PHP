@@ -12,29 +12,21 @@
     <div class="w-75">
 
         <div class="d-flex flex-column border border-dark chat-container">
-
-            <div class="d-flex flex-column message message-other">
-                <span class="name">Victor Inácio</span>
-                <span>EJGOMRGOIREJHGOIJERHNGIORJEHGOIj</span>
-            </div>
-            <div class="d-flex flex-column message message-mine">
-                <span class="name">Victor Inácio</span>
-                <span>EJGOMRGOIR erge er gerg ergEJHGOIrthrth rth rthtr htrhrth JERH NGIORJEHGOIj</span>
-            </div>
-        
-            <div class="d-flex flex-column message message-mine">
-                <span class="name">Victor Inácio</span>
-                <span>EJGOMRGOIREJHGOIJERHNGIORJEHGOIj</span>
-            </div>
         
         </div>
 
-        <input type="text" placeholder="Nome" class="form-control mb-1">
-        <textarea name="message" cols="30" rows="5" placeholder="Mensagem" class="form-control"></textarea>
-        <input type="submit" class="btn btn-success mt-1" value="Enviar">
+        <form id="chat-form" action="<?= $data['chatMessageRoute'] ?>" method="post">
+
+            <input type="text" name="name" placeholder="Nome" class="form-control mb-1">
+            <input type="hidden" name="sender_id" value="<?= $data['sender_id'] ?>">
+            <textarea name="message" cols="30" rows="5" placeholder="Mensagem" class="form-control"></textarea>
+            <input type="submit" class="btn btn-success mt-1" value="Enviar">
+
+        </form>
 
     </div>
     
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script src="<?= URL_BASE ?>/js/script.js"></script>
 

@@ -13,7 +13,8 @@ $dotenv->load();
 
 $router = new Router();
 
-$router->get('/', 'ChatController@view')->name('chat.view');
+$router::get('/', 'ChatController@view')->name('chat.view');
+$router::post('/sendmessage', 'ChatController@sendMessage')->name('chat.sendmessage');
 
 
 $router->dispatch();

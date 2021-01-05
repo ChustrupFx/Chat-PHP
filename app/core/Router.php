@@ -4,36 +4,72 @@ namespace App\Core;
 
 class Router {
 
-    private string $currentRoute;
-    private array $routes = [];
+    private static string $currentRoute;
+    private static array $routes = [];
 
-    public function get($route, $function) {
+    private function routeExists($route) {
+        foreach(self::$routes as $route) {
+            if ($route['route'] === $route) return true;
 
-        $this->currentRoute = $route;
+            return false;
+        }
+    } 
+
+    private function getRoute($route) {
+        if (!$this->routeExists($route)) return null;
+
+        foreach($this->route as $route) {
+            if ($route['route'] === $route) return $route;
+        }
+    }
+
+    private function addRoute($route, $function, $method) {
+        self::$currentRoute = $route;
+
+        if (Router::routeExists($route)) {
+
+            $existingRoute = $this->getRoute($route);
+            $routeMethods = $existingRoute['method'];
+
+            if (!in_array($method, $routeMethods)) return;
+
+            array_push($existingRoute, $method);
+
+            return;
+        }
 
         $data = [
             'route' => $route,
             'function' => is_object($function) 
                             ? $function 
-                            : $this->controllerFunctionByString($function),
-            'method' => 'GET',
+                            : Router::controllerFunctionByString($function),
+            'method' => [$method],
             'name' => ''
         ];
 
-        array_push($this->routes, $data);
+        array_push(self::$routes, $data);
+    }
 
-        return $this;
+    public static function get($route, $function) {
+
+        Router::addRoute($route, $function, 'GET');
+
+        return new self;
+    }
+
+    public function post($route, $function) {
+        self::addRoute($route, $function, 'POST');
+
+        return new self;
     }
 
     public function name(string $name): void {
-        if (empty($this->currentRoute)) 
-            throw new Exception('No route selected');
+        if (empty(self::$currentRoute)) 
+            throw new \Exception('No route selected');
 
-        foreach($this->routes as $route) {
-            if ($route['route'] === $this->currentRoute) {
-                
-                $route['name'] = $name;
-
+        for ($i = 0; $i < self::$routes; $i++) {
+            if (self::$routes[$i]['route'] === Router::$currentRoute) {
+                self::$routes[$i]['name'] = $name;
                 return;
             }
         }
@@ -42,15 +78,15 @@ class Router {
 
     public function route(string $routeName): string {
 
-        foreach($this->routes as $route) {
-
+        foreach(self::$routes as $route) {
             if ($route['name'] === $routeName) {
-                return $_SERVER["SERVER_NAME"].$route['route'];
+                return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") 
+                . "://$_SERVER[HTTP_HOST]$route[route]";
             }
 
         }
 
-        throw new Exception("There's no named with $routeName");
+        throw new \Exception("There's no route named with $routeName");
 
     }
 
@@ -58,10 +94,10 @@ class Router {
         $currentRoute =  $_SERVER["REQUEST_URI"];
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        foreach($this->routes as $route) {
+        foreach(self::$routes as $route) {
             if ($route['route'] === $currentRoute) {
-
-                if ($requestMethod !== $route['method']) {
+                
+                if (!in_array($requestMethod, $route['method'])) {
                     throw new \Exception("THIS ROUTE NEEDS A $requestMethod REQUEST");
                     return;
                 }
@@ -73,6 +109,7 @@ class Router {
     }
 
     private function controllerFunctionByString(string $string) {
+
         [$controllerName, $functionName] = explode('@', $string);
 
         if (!file_exists("../app/controllers/$controllerName.php"))
@@ -83,12 +120,11 @@ class Router {
         $controllerInstance = new $controllerName;
 
         if (!method_exists($controllerInstance, $functionName))
-            throw new Exception("Method $functionName does not exist on controller $controller");
+            throw new \Exception("Method $functionName does not exist on controller $controller");
 
         $controllerMethod = [$controllerInstance, $functionName];
 
         return $controllerMethod;
-
 
     }
 
